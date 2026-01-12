@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pipseed"
+version = "0.1.0"
+description = "CLI tool for generating fake data to populate test datasets"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Guillemot Clement"}
+]
+dependencies = [
+    "faker>=20.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+pipseed = "pipseed.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pipseed*"]
