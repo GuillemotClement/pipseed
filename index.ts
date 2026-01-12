@@ -5,6 +5,11 @@ type Commande = {
   description: string;
 }
 
+type InputUserProps = {
+  cmd: string;
+  args: string[];
+}
+
 const commands: Commande[] = [
   {
     short: "-h",
@@ -20,7 +25,7 @@ const commands: Commande[] = [
     short: "-q",
     long: "--quit",
     description: "Exit the program",
-  }
+  },
 ];
 
 console.log("Welcome to PipSeed, my first fucking CLI tool for generate fake data for seed your beautiful database");
@@ -29,31 +34,61 @@ console.log("If you think about new behavior, or find some bug, please, send me 
 console.log("\n");
 
 while(1){
-  const inputUser=  prompt("Please, write your instruction :");
+  const inputUser= prompt("Please, write your instruction :") ?? "";
   console.log("\n");
+  const { cmd, args } = extractInput(inputUser);
 
-  const arrInput = inputUser?.split(" ");
-  const cmd = arrInput?.slice(0, 1)[0];
-  const args = arrInput?.slice(1);
+
+  switch(cmd){
+    case '-q':
+    case '--quit':
+      console.log("Goddbye, I hope you enjoyt it !");
+      process.exit(0);
+      break;
+    case '-h':
+    case '-help':
+      commands.forEach((commande) => {
+        console.log("Commande courte : ", commande.short);
+        console.log("Commande longue: ", commande.long);
+        console.log("Description: ", commande.description);
+        console.log("----------------------");
+      });
+      break;
+
+    default: 
+      console.log("You can use '-h' or '--help' for see the manual");
+  }
+}
+
+function extractInput(prompt: string): InputUserProps {
+  const arrInput = prompt?.split(" ");
+  const cmd = arrInput?.slice(0, 1)[0] ?? "";
+  const args = arrInput?.slice(1) ?? [];
 
   if(!cmd){
-    console.log("Sorry, you haven't write some commande");
-    console.log("You can use '-h' or '--help' for see the manual");
+    console.log("You haven't write a command");
+    return { cmd, args}
   }
 
-  if(cmd === "-q" || cmd === "--quit"){
-    console.log("Goddbye, I hope you enjoyt it !");
-    process.exit(0);
-  } 
+  const isShort = cmd.length < 2;
+  const isLong = cmd.length > 2;
 
-  if(cmd === "-h" || cmd === "--help"){
-    commands.forEach((commande) => {
-      console.log("Commande courte : ", commande.short);
-      console.log("Commande longue: ", commande.long);
-      console.log("Description: ", commande.description);
-      console.log("----------------------");
-    });
+  if(isShort){
+    if(cmd[0] !== '-'){
+      console.log("Short command need '-' for the first caracter");
+      return { cmd: "", args: []};
+    }
+  }
+  
+  if(isLong){
+    if(cmd[0] !== '-' && cmd[1] !== '--'){
+      console.log("Long command need to start with '--'");
+      return { cmd: "", args: []};
+    }
+  }
+
+  return {
+    cmd,
+    args
+  }
 }
-
-}
-
